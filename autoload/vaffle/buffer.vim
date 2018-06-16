@@ -49,6 +49,9 @@ endfunction
 
 
 function! s:create_line_from_item(item) abort
+  if exists('*g:VaffleCreateLineFromItem')
+    return g:VaffleCreateLineFromItem(a:item)
+  end
   return printf('%s %s',
         \ a:item.selected ? '*' : ' ',
         \ a:item.basename . (a:item.is_dir ? '/' : ''))
