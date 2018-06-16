@@ -9,6 +9,7 @@ function! vaffle#item#create(path) abort
   let item.index = -1
   let item.path = vaffle#util#normalize_path(a:path)
   let item.is_dir = is_dir
+  let item.is_link = (item.path !=# a:path)
   let item.selected = 0
   let item.basename = vaffle#util#get_last_component(a:path, is_dir)
 
