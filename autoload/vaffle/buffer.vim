@@ -227,9 +227,14 @@ endfunction
 
 function! vaffle#buffer#duplicate() abort
   let lnum = line(".")
+  let env = vaffle#buffer#get_env()
+  let shows_hidden_files = env.shows_hidden_files
   call vaffle#file#edit(
         \ vaffle#buffer#get_env(),
         \ '')
+  if shows_hidden_files
+    execute "normal \<Plug>(vaffle-toggle-hidden)"
+  endif
   execute lnum
 endfunction
 
