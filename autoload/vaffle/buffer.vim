@@ -226,9 +226,11 @@ endfunction
 
 
 function! vaffle#buffer#duplicate() abort
+  let lnum = line(".")
   call vaffle#file#edit(
         \ vaffle#buffer#get_env(),
         \ '')
+  execute lnum
 endfunction
 
 
