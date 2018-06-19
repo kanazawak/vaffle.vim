@@ -42,7 +42,7 @@ function! vaffle#env#create_items(env) abort
   let items =  map(
         \ copy(paths),
         \ 'vaffle#item#create(v:val)')
-  call sort(items, 'vaffle#sorter#default#compare')
+  call sort(items, s:get_comparator())
 
   let index = 0
   for item in items
@@ -51,6 +51,14 @@ function! vaffle#env#create_items(env) abort
   endfor
 
   return items
+endfunction
+
+
+function! s:get_comparator() abort
+  if exists('*g:VaffleGetComparator')
+    return g:VaffleGetComparator()
+  endif
+  return 'vaffle#sorter#default#compare'
 endfunction
 
 
