@@ -17,7 +17,7 @@ function! vaffle#event#on_bufenter() abort
   let path = expand('%:p')
 
   let should_init = is_vaffle_buffer
-        \ || isdirectory(path)
+        \ || (isdirectory(path) && !&previewwindow)
 
   if !should_init
     " Store bufnr of non-directory buffer to back to initial buffer
