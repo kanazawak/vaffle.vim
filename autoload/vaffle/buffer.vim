@@ -201,6 +201,8 @@ function! vaffle#buffer#redraw() abort
     call setline(1, '  (no items)')
   endif
 
+  silent doautocmd User VaffleRedrawPost
+
   setlocal nomodifiable
   setlocal nomodified
 
