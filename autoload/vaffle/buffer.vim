@@ -75,30 +75,10 @@ function! s:perform_auto_cd_if_needed(path) abort
 endfunction
 
 
-function! s:should_wipe_out(bufnr) abort
-  if !bufexists(a:bufnr)
-    return 0
-  endif
-
-  return isdirectory(bufname(a:bufnr))
-        \ && !buflisted(a:bufnr)
-        \ && !bufloaded(a:bufnr)
-endfunction
-
-
-function! s:clean_up_outdated_buffers() abort
-  let all_bufnrs = range(1, bufnr('$'))
-  let outdated_bufnrs = filter(
-        \ all_bufnrs,
-        \ 's:should_wipe_out(v:val)')
-  for bufnr in outdated_bufnrs
-    execute printf('silent bwipeout %d', bufnr)
-  endfor
-endfunction
-
-
 function! vaffle#buffer#init(path) abort
-  call s:clean_up_outdated_buffers()
+  if search('.', 'n') > 0
+    return
+  endif
 
   let path = vaffle#util#normalize_path(a:path)
 
