@@ -2,20 +2,6 @@ let s:save_cpo = &cpoptions
 set cpoptions&vim
 
 
-function! s:keep_buffer_singularity() abort
-  let related_win_ids = vaffle#compat#win_findbuf(bufnr('%'))
-  if len(related_win_ids) <= 1
-    return 1
-  endif
-
-  " Detected multiple windows for single buffer:
-  " Duplicate the buffer to avoid unwanted sync between different windows
-  call vaffle#buffer#duplicate()
-
-  return 1
-endfunction
-
-
 function! s:get_cursor_items(env, mode) abort
   let items = a:env.items
   if empty(items)
@@ -47,19 +33,14 @@ endfunction
 
 function! vaffle#init(...) abort
   let bufnr = bufnr('%')
-  let is_vaffle_buffer = vaffle#buffer#is_for_vaffle(bufnr)
 
   let path = get(a:000, 0, '')
-  let extracted_path = vaffle#buffer#extract_path_from_bufname(path)
-  if !empty(extracted_path)
-    let path = extracted_path
-  endif
   if empty(path)
     let path = getcwd()
   endif
 
   let bufname = bufname('%')
-  if !is_vaffle_buffer && !isdirectory(bufname)
+  if !isdirectory(bufname)
     " Open new directory buffer and overwrite it
     " (will be initialized by vaffle#event#on_bufenter)
     execute printf('edit %s', fnameescape(path))
@@ -78,8 +59,6 @@ endfunction
 
 
 function! vaffle#refresh() abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let cursor_items = s:get_cursor_items(env, 'n')
   if !empty(cursor_items)
@@ -96,8 +75,6 @@ endfunction
 
 
 function! vaffle#open_current(open_mode) abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let item = get(
         \ s:get_cursor_items(env, 'n'),
@@ -114,8 +91,6 @@ endfunction
 
 
 function! vaffle#open_selected() abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let items = s:get_selected_items(env)
   if empty(items)
@@ -129,8 +104,6 @@ endfunction
 
 
 function! vaffle#open(path) abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let env_dir = env.dir
 
@@ -162,8 +135,6 @@ endfunction
 
 
 function! vaffle#toggle_current(mode) abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let items = s:get_cursor_items(env, a:mode)
   if empty(items)
@@ -191,8 +162,6 @@ endfunction
 
 
 function! vaffle#toggle_all() abort
-  call s:keep_buffer_singularity()
-
   let items = vaffle#buffer#get_env().items
   if empty(items)
     return
@@ -204,8 +173,6 @@ endfunction
 
 
 function! vaffle#set_selected_all(selected) abort
-  call s:keep_buffer_singularity()
-
   for item in vaffle#buffer#get_env().items
     let item.selected = a:selected
   endfor
@@ -215,8 +182,6 @@ endfunction
 
 
 function! vaffle#quit() abort
-  call s:keep_buffer_singularity()
-
   " Try restoring previous buffer
   let bufnr = vaffle#window#get_env().non_vaffle_bufnr
   if bufexists(bufnr)
@@ -229,8 +194,6 @@ endfunction
 
 
 function! vaffle#delete_selected() abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let items = s:get_selected_items(env)
   if empty(items)
@@ -253,8 +216,6 @@ endfunction
 
 
 function! vaffle#move_selected() abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let items = s:get_selected_items(env)
   if empty(items)
@@ -279,8 +240,6 @@ endfunction
 
 
 function! vaffle#mkdir() abort
-  call s:keep_buffer_singularity()
-
   let name = input('New directory name: ')
   echo "\n"
   if empty(name)
@@ -296,8 +255,6 @@ endfunction
 
 
 function! vaffle#new_file() abort
-  call s:keep_buffer_singularity()
-
   let name = input('New file name: ')
   echo "\n"
   if empty(name)
@@ -312,8 +269,6 @@ endfunction
 
 
 function! vaffle#rename_selected() abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let items = s:get_selected_items(env)
   if empty(items)
@@ -342,8 +297,6 @@ endfunction
 
 
 function! vaffle#toggle_hidden() abort
-  call s:keep_buffer_singularity()
-
   let env = vaffle#buffer#get_env()
   let env.shows_hidden_files = !env.shows_hidden_files
   call vaffle#buffer#set_env(env)

@@ -58,26 +58,6 @@ function! s:create_line_from_item(item) abort
 endfunction
 
 
-function! s:generate_unique_bufname(path) abort
-  let bufname = ''
-  let index = 0
-
-  while 1
-    " Add index to avoid duplicated buffer name
-    let bufname = fnameescape(printf('vaffle://%d/%s',
-          \ index,
-          \ a:path))
-    if bufnr(bufname) < 0
-      break
-    endif
-
-    let index += 1
-  endwhile
-
-  return bufname
-endfunction
-
-
 function! s:perform_auto_cd_if_needed(path) abort
   if !g:vaffle_auto_cd
     return
@@ -100,7 +80,7 @@ function! s:should_wipe_out(bufnr) abort
     return 0
   endif
 
-  return vaffle#buffer#is_for_vaffle(a:bufnr)
+  return isdirectory(bufname(a:bufnr))
         \ && !buflisted(a:bufnr)
         \ && !bufloaded(a:bufnr)
 endfunction
@@ -122,11 +102,6 @@ function! vaffle#buffer#init(path) abort
 
   let path = vaffle#util#normalize_path(a:path)
 
-  " Give unique name to buffer to avoid unwanted sync
-  " between different windows
-  execute printf('silent file %s',
-        \ s:generate_unique_bufname(path))
-
   setlocal bufhidden=delete
   setlocal buftype=nowrite
   setlocal filetype=vaffle
@@ -147,18 +122,6 @@ function! vaffle#buffer#init(path) abort
   call vaffle#buffer#redraw()
 
   call s:perform_auto_cd_if_needed(path)
-endfunction
-
-
-function! vaffle#buffer#extract_path_from_bufname(bufname) abort
-  let matches = matchlist(a:bufname, '^vaffle://\d\+/\(.*\)$')
-  return get(matches, 1, '')
-endfunction
-
-
-function! vaffle#buffer#is_for_vaffle(bufnr) abort
-  let bufname = bufname(a:bufnr)
-  return !empty(vaffle#buffer#extract_path_from_bufname(bufname))
 endfunction
 
 
@@ -198,20 +161,6 @@ function! vaffle#buffer#redraw_item(item) abort
 
   setlocal nomodifiable
   setlocal nomodified
-endfunction
-
-
-function! vaffle#buffer#duplicate() abort
-  let lnum = line(".")
-  let env = vaffle#buffer#get_env()
-  let shows_hidden_files = env.shows_hidden_files
-  call vaffle#file#edit(
-        \ vaffle#buffer#get_env(),
-        \ '')
-  if shows_hidden_files
-    execute "normal \<Plug>(vaffle-toggle-hidden)"
-  endif
-  execute lnum
 endfunction
 
 

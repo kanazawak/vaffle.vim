@@ -20,7 +20,7 @@ function! s:open_single(item, open_mode) abort
       tabnew
     endif
 
-    call vaffle#init(path)
+    execute 'edit' a:item.path
     return
   endif
 
