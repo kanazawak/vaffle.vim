@@ -31,12 +31,47 @@ endfunction
 
 
 function! vaffle#window#get_env() abort
-  return get(w:, 'vaffle', {})
+  return get(w:, 'vaffle', {'cursor_paths': {}})
 endfunction
 
 
 function! vaffle#window#set_env(win_env) abort
   let w:vaffle = a:win_env
+endfunction
+
+
+function! vaffle#window#save_cursor(item) abort
+  let env = vaffle#buffer#get_env()
+  let win_env = vaffle#window#get_env()
+  let win_env.cursor_paths[env.dir] = a:item.path
+  call vaffle#window#set_env(win_env)
+endfunction
+
+
+function! s:get_saved_cursor_lnum() abort
+  let env = vaffle#buffer#get_env()
+  let win_env = vaffle#window#get_env()
+  let cursor_paths = win_env.cursor_paths
+  let cursor_path = get(cursor_paths, env.dir, '')
+  if empty(cursor_path)
+    return 1
+  endif
+
+  let items = filter(
+        \ copy(env.items),
+        \ 'v:val.path ==# cursor_path')
+  if empty(items)
+    return 1
+  endif
+
+  let cursor_item = items[0]
+  return index(env.items, cursor_item) + 1
+endfunction
+
+
+function! vaffle#window#restore_cursor() abort
+  let initial_lnum = s:get_saved_cursor_lnum()
+  call cursor([initial_lnum, 1, 0, 1])
 endfunction
 
 

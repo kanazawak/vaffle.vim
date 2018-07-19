@@ -83,7 +83,7 @@ function! vaffle#refresh() abort
   let env = vaffle#buffer#get_env()
   let cursor_items = s:get_cursor_items(env, 'n')
   if !empty(cursor_items)
-    call vaffle#buffer#save_cursor(cursor_items[0])
+    call vaffle#window#save_cursor(cursor_items[0])
   endif
 
   let new_env = vaffle#env#create(env.dir)
@@ -107,7 +107,7 @@ function! vaffle#open_current(open_mode) abort
     return
   endif
 
-  call vaffle#buffer#save_cursor(item)
+  call vaffle#window#save_cursor(item)
 
   call vaffle#file#open([item], a:open_mode)
 endfunction
@@ -122,7 +122,7 @@ function! vaffle#open_selected() abort
     return
   endif
 
-  call vaffle#buffer#save_cursor(items[0])
+  call vaffle#window#save_cursor(items[0])
 
   call vaffle#file#open(items, '')
 endfunction
@@ -136,7 +136,7 @@ function! vaffle#open(path) abort
 
   let cursor_items = s:get_cursor_items(env, 'n')
   if !empty(cursor_items)
-    call vaffle#buffer#save_cursor(cursor_items[0])
+    call vaffle#window#save_cursor(cursor_items[0])
   endif
 
   let new_dir = isdirectory(expand(a:path)) ?
@@ -147,8 +147,8 @@ function! vaffle#open(path) abort
 
   " Move cursor to previous current directory
   let prev_dir_item =vaffle#item#create(env_dir)
-  call vaffle#buffer#save_cursor(prev_dir_item)
-  call vaffle#buffer#restore_cursor()
+  call vaffle#window#save_cursor(prev_dir_item)
+  call vaffle#window#restore_cursor()
 endfunction
 
 
@@ -353,7 +353,7 @@ function! vaffle#toggle_hidden() abort
         \ 0,
         \ {})
   if !empty(item)
-    call vaffle#buffer#save_cursor(item)
+    call vaffle#window#save_cursor(item)
   endif
 
   let env = vaffle#buffer#get_env()

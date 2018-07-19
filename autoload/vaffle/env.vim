@@ -8,7 +8,6 @@ set cpoptions&vim
 function! vaffle#env#create(path) abort
   let env = {}
   let env.dir = vaffle#util#normalize_path(a:path)
-  let env.cursor_paths = {}
   let env.shows_hidden_files = g:vaffle_show_hidden_files
   let env.items = []
   return env
@@ -16,11 +15,6 @@ endfunction
 
 
 function! vaffle#env#inherit(env, old_env) abort
-  let a:env.cursor_paths = get(
-        \ a:old_env,
-        \ 'cursor_paths',
-        \ a:env.cursor_paths)
-
   let a:env.shows_hidden_files = get(
         \ a:old_env,
         \ 'shows_hidden_files',

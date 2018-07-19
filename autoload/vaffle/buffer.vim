@@ -95,26 +95,6 @@ function! s:perform_auto_cd_if_needed(path) abort
 endfunction
 
 
-function! s:get_saved_cursor_lnum() abort
-  let env = vaffle#buffer#get_env()
-  let cursor_paths = env.cursor_paths
-  let cursor_path = get(cursor_paths, env.dir, '')
-  if empty(cursor_path)
-    return 1
-  endif
-
-  let items = filter(
-        \ copy(env.items),
-        \ 'v:val.path ==# cursor_path')
-  if empty(items)
-    return 1
-  endif
-
-  let cursor_item = items[0]
-  return index(env.items, cursor_item) + 1
-endfunction
-
-
 function! s:should_wipe_out(bufnr) abort
   if !bufexists(a:bufnr)
     return 0
@@ -206,13 +186,7 @@ function! vaffle#buffer#redraw() abort
   setlocal nomodifiable
   setlocal nomodified
 
-  call vaffle#buffer#restore_cursor()
-endfunction
-
-
-function! vaffle#buffer#restore_cursor() abort
-  let initial_lnum = s:get_saved_cursor_lnum()
-  call cursor([initial_lnum, 1, 0, 1])
+  call vaffle#window#restore_cursor()
 endfunction
 
 
@@ -249,13 +223,6 @@ endfunction
 
 function! vaffle#buffer#set_env(env) abort
   let b:vaffle = a:env
-endfunction
-
-
-function! vaffle#buffer#save_cursor(item) abort
-  let env = vaffle#buffer#get_env()
-  let env.cursor_paths[env.dir] = a:item.path
-  call vaffle#buffer#set_env(env)
 endfunction
 
 
