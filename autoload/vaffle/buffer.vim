@@ -58,29 +58,29 @@ function! s:create_line_from_item(item) abort
 endfunction
 
 
-function! s:perform_auto_cd_if_needed(path) abort
+function! s:perform_auto_cd_if_needed() abort
+  let path = expand('%')
+
   if !g:vaffle_auto_cd
     return
   endif
 
   try
-    execute printf('lcd %s', fnameescape(a:path))
+    execute printf('lcd %s', fnameescape(path))
   catch /:E472:/
     " E472: Command failed
     " Permission denied, etc.
     call vaffle#util#echo_error(
-          \ printf('Changing directory failed: ''%s''', a:path))
+          \ printf('Changing directory failed: ''%s''', path))
     return
   endtry
 endfunction
 
 
-function! vaffle#buffer#init(path) abort
+function! vaffle#buffer#init() abort
   if search('.', 'n') > 0
     return
   endif
-
-  let path = vaffle#util#normalize_path(a:path)
 
   setlocal bufhidden=delete
   setlocal buftype=nowrite
@@ -94,14 +94,12 @@ function! vaffle#buffer#init(path) abort
     call s:set_up_default_mappings()
   endif
 
-  let env = vaffle#env#create(path)
-  call vaffle#env#inherit(env, vaffle#buffer#get_env())
+  let env = vaffle#buffer#get_env()
   let env.items = vaffle#env#create_items(env)
-  call vaffle#buffer#set_env(env)
 
   call vaffle#buffer#redraw()
 
-  call s:perform_auto_cd_if_needed(path)
+  call s:perform_auto_cd_if_needed()
 endfunction
 
 
@@ -145,13 +143,8 @@ endfunction
 
 
 function! vaffle#buffer#get_env() abort
-  let b:vaffle = get(b:, 'vaffle', {})
+  let b:vaffle = get(b:, 'vaffle', vaffle#env#create(expand('%')))
   return b:vaffle
-endfunction
-
-
-function! vaffle#buffer#set_env(env) abort
-  let b:vaffle = a:env
 endfunction
 
 

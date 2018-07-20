@@ -31,7 +31,8 @@ endfunction
 
 
 function! vaffle#window#get_env() abort
-  return get(w:, 'vaffle', {'cursor_paths': {}})
+  let w:vaffle = get(w:, 'vaffle', vaffle#win_env#create())
+  return w:vaffle
 endfunction
 
 

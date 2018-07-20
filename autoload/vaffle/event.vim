@@ -17,13 +17,12 @@ function! vaffle#event#on_bufenter() abort
 
   let should_init = isdirectory(path) && !&previewwindow
 
-  if !should_init
+  if should_init
+    call vaffle#init(path)
+  else
     " Store bufnr of non-directory buffer to back to initial buffer
     call vaffle#window#store_non_vaffle_buffer(bufnr)
-    return
   endif
-
-  call vaffle#init(path)
 endfunction
 
 

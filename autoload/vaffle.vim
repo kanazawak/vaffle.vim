@@ -48,7 +48,7 @@ function! vaffle#init(...) abort
   endif
 
   try
-    call vaffle#buffer#init(path)
+    call vaffle#buffer#init()
     call vaffle#window#init()
   catch /:E37:/
     call vaffle#util#echo_error(
@@ -65,10 +65,8 @@ function! vaffle#refresh() abort
     call vaffle#window#save_cursor(cursor_items[0])
   endif
 
-  let new_env = vaffle#env#create(env.dir)
-  call vaffle#env#inherit(new_env, env)
-  let new_env.items = vaffle#env#create_items(new_env)
-  call vaffle#buffer#set_env(new_env)
+  let env = vaffle#buffer#get_env()
+  let env.items = vaffle#env#create_items(env)
 
   call vaffle#buffer#redraw()
 endfunction
@@ -299,7 +297,6 @@ endfunction
 function! vaffle#toggle_hidden() abort
   let env = vaffle#buffer#get_env()
   let env.shows_hidden_files = !env.shows_hidden_files
-  call vaffle#buffer#set_env(env)
 
   let item = get(
         \ s:get_cursor_items(env, 'n'),
@@ -309,9 +306,7 @@ function! vaffle#toggle_hidden() abort
     call vaffle#window#save_cursor(item)
   endif
 
-  let env = vaffle#buffer#get_env()
   let env.items = vaffle#env#create_items(env)
-  call vaffle#buffer#set_env(env)
 
   call vaffle#buffer#redraw()
 endfunction
