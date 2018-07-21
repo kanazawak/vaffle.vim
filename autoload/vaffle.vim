@@ -32,20 +32,12 @@ endfunction
 
 
 function! vaffle#init(...) abort
-  let bufnr = bufnr('%')
-
   let path = get(a:000, 0, '')
   if empty(path)
     let path = getcwd()
   endif
 
-  let bufname = bufname('%')
-  if !isdirectory(bufname)
-    " Open new directory buffer and overwrite it
-    " (will be initialized by vaffle#event#on_bufenter)
-    execute printf('edit %s', fnameescape(path))
-    return
-  endif
+  execute printf('edit %s', fnameescape(path))
 
   try
     call vaffle#buffer#init()
