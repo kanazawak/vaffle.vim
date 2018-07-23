@@ -82,6 +82,10 @@ function! vaffle#buffer#init() abort
     return
   endif
 
+  if g:vaffle_use_default_mappings
+    call s:set_up_default_mappings()
+  endif
+
   setlocal bufhidden=delete
   setlocal buftype=nowrite
   setlocal filetype=vaffle
@@ -89,10 +93,6 @@ function! vaffle#buffer#init() abort
   setlocal nobuflisted
   setlocal noswapfile
   setlocal nowrap
-
-  if g:vaffle_use_default_mappings
-    call s:set_up_default_mappings()
-  endif
 
   let env = vaffle#buffer#get_env()
   let env.items = vaffle#env#create_items(env)
