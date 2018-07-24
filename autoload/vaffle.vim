@@ -31,14 +31,17 @@ function! s:get_selected_items(env) abort
 endfunction
 
 
-function! vaffle#init(...) abort
+function! vaffle#start(...) abort
   let path = get(a:000, 0, '')
   if empty(path)
     let path = getcwd()
   endif
 
   execute printf('edit %s', fnameescape(path))
+endfunction
 
+
+function! vaffle#init(path) abort
   try
     call vaffle#buffer#init()
     call vaffle#window#init()
