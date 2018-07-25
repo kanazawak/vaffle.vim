@@ -41,7 +41,7 @@ function! vaffle#start(...) abort
 endfunction
 
 
-function! vaffle#init(path) abort
+function! vaffle#init() abort
   try
     call vaffle#buffer#init()
     call vaffle#window#init()

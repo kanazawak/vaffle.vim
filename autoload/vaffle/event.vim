@@ -12,16 +12,13 @@ endfunction
 function! vaffle#event#on_bufenter() abort
   call s:newtralize_netrw()
 
-  let bufnr = bufnr('%')
-  let path = expand('%:p')
-
-  let should_init = isdirectory(path) && !&previewwindow
+  let should_init = isdirectory(expand('%'))
 
   if should_init
-    call vaffle#init(path)
+    call vaffle#init()
   else
     " Store bufnr of non-directory buffer to back to initial buffer
-    call vaffle#window#store_non_vaffle_buffer(bufnr)
+    call vaffle#window#store_non_vaffle_buffer(bufnr('%'))
   endif
 endfunction
 

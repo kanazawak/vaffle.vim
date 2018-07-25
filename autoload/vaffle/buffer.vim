@@ -78,6 +78,8 @@ endfunction
 
 
 function! vaffle#buffer#init() abort
+  setlocal nobuflisted
+
   if search('.', 'n') > 0
     return
   endif
@@ -86,11 +88,10 @@ function! vaffle#buffer#init() abort
     call s:set_up_default_mappings()
   endif
 
-  setlocal bufhidden=delete
+  setlocal bufhidden=hide
   setlocal buftype=nowrite
   setlocal filetype=vaffle
   setlocal matchpairs=
-  setlocal nobuflisted
   setlocal noswapfile
   setlocal nowrap
 
