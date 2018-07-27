@@ -2,7 +2,7 @@ let s:save_cpo = &cpoptions
 set cpoptions&vim
 
 
-function! s:get_cursor_items(env, mode) abort
+function! vaffle#get_cursor_items(env, mode) abort
   let items = a:env.items
   if empty(items)
     return []
@@ -27,7 +27,7 @@ function! s:get_selected_items(env) abort
     return selected_items
   endif
 
-  return s:get_cursor_items(a:env, 'n')
+  return vaffle#get_cursor_items(a:env, 'n')
 endfunction
 
 
@@ -55,7 +55,7 @@ endfunction
 
 function! vaffle#refresh() abort
   let env = vaffle#buffer#get_env()
-  let cursor_items = s:get_cursor_items(env, 'n')
+  let cursor_items = vaffle#get_cursor_items(env, 'n')
   if !empty(cursor_items)
     call vaffle#window#save_cursor(cursor_items[0])
   endif
@@ -70,7 +70,7 @@ endfunction
 function! vaffle#open_current(open_mode) abort
   let env = vaffle#buffer#get_env()
   let item = get(
-        \ s:get_cursor_items(env, 'n'),
+        \ vaffle#get_cursor_items(env, 'n'),
         \ 0,
         \ {})
   if empty(item)
@@ -100,7 +100,7 @@ function! vaffle#open(path) abort
   let env = vaffle#buffer#get_env()
   let env_dir = env.dir
 
-  let cursor_items = s:get_cursor_items(env, 'n')
+  let cursor_items = vaffle#get_cursor_items(env, 'n')
   if !empty(cursor_items)
     call vaffle#window#save_cursor(cursor_items[0])
   endif
@@ -129,7 +129,7 @@ endfunction
 
 function! vaffle#toggle_current(mode) abort
   let env = vaffle#buffer#get_env()
-  let items = s:get_cursor_items(env, a:mode)
+  let items = vaffle#get_cursor_items(env, a:mode)
   if empty(items)
     return
   endif
@@ -296,7 +296,7 @@ function! vaffle#toggle_hidden() abort
   let env.shows_hidden_files = !env.shows_hidden_files
 
   let item = get(
-        \ s:get_cursor_items(env, 'n'),
+        \ vaffle#get_cursor_items(env, 'n'),
         \ 0,
         \ {})
   if !empty(item)

@@ -23,4 +23,13 @@ function! vaffle#event#on_bufenter() abort
 endfunction
 
 
+function! vaffle#event#on_winleave() abort
+  let env = vaffle#buffer#get_env()
+  let cursor_items = vaffle#get_cursor_items(env, 'n')
+  if !empty(cursor_items)
+    call vaffle#window#save_cursor(cursor_items[0])
+  endif
+endfunction
+
+
 let &cpoptions = s:save_cpo

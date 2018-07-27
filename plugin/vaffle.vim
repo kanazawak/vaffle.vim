@@ -11,6 +11,7 @@ let g:loaded_vaffle = 1
 augroup vaffle_vim
   autocmd!
   autocmd BufEnter * call vaffle#event#on_bufenter()
+  autocmd WinLeave * call vaffle#event#on_winleave()
 augroup END
 
 
