@@ -203,10 +203,8 @@ function! vaffle#delete_selected() abort
     return
   endif
 
-  let lnum = line('.')
   call vaffle#file#delete(items)
   call vaffle#refresh()
-  execute lnum
 endfunction
 
 
