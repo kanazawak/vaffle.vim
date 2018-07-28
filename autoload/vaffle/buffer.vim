@@ -81,6 +81,7 @@ function! vaffle#buffer#init() abort
   setlocal nobuflisted
 
   if search('.', 'n') > 0
+    call vaffle#refresh()
     return
   endif
 
@@ -108,7 +109,9 @@ function! vaffle#buffer#redraw() abort
   setlocal modifiable
 
   " Clear buffer before drawing items
-  silent keepjumps %delete _
+  if search('.', 'n') > 0
+    silent keepjumps %s/.//g
+  endif
 
   let env = vaffle#buffer#get_env()
   let items = env.items
@@ -123,7 +126,7 @@ function! vaffle#buffer#redraw() abort
     call setline(1, '  (no items)')
   endif
 
-  silent doautocmd User VaffleRedrawPost
+  silent keepjumps v/\S/d
 
   setlocal nomodifiable
   setlocal nomodified
