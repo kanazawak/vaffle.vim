@@ -19,7 +19,7 @@ function! vaffle#get_cursor_items(mode) abort
 endfunction
 
 
-function! s:get_selected_items() abort
+function! vaffle#get_selected_items() abort
   let env = vaffle#buffer#get_env()
   let selected_items = filter(
         \ copy(env.items),
@@ -83,7 +83,7 @@ endfunction
 
 
 function! vaffle#open_selected() abort
-  let items = s:get_selected_items()
+  let items = vaffle#get_selected_items()
   if empty(items)
     return
   endif
@@ -184,7 +184,7 @@ endfunction
 
 
 function! vaffle#delete_selected() abort
-  let items = s:get_selected_items()
+  let items = vaffle#get_selected_items()
   if empty(items)
     return
   endif
@@ -205,7 +205,7 @@ endfunction
 
 
 function! vaffle#move_selected() abort
-  let items = s:get_selected_items()
+  let items = vaffle#get_selected_items()
   if empty(items)
     return
   endif
@@ -257,7 +257,7 @@ endfunction
 
 
 function! vaffle#rename_selected() abort
-  let items = s:get_selected_items()
+  let items = vaffle#get_selected_items()
   if empty(items)
     return
   endif
@@ -302,7 +302,7 @@ endfunction
 
 
 function! vaffle#fill_cmdline() abort
-  let items = s:get_selected_items()
+  let items = vaffle#get_selected_items()
   if empty(items)
     return
   endif
