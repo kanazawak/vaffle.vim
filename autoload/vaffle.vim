@@ -133,7 +133,7 @@ function! vaffle#toggle_current(mode) abort
 
   if len(items) == 1
     let item = items[0]
-    let item.selected = item.selected ? 0 : 1
+    call vaffle#set_selected(item, !item.selected)
 
     call vaffle#buffer#redraw_item(item)
 
@@ -145,7 +145,7 @@ function! vaffle#toggle_current(mode) abort
 
   let selected = items[0].selected ? 0 : 1
   for item in items
-    let item.selected = selected
+    call vaffle#set_selected(item, selected)
     call vaffle#buffer#redraw_item(item)
   endfor
 endfunction
@@ -157,17 +157,18 @@ function! vaffle#toggle_all() abort
     return
   endif
 
-  call vaffle#set_selected_all(
-        \ !items[0].selected)
-endfunction
+  let selected = items[0].selected ? 0 : 1
 
-
-function! vaffle#set_selected_all(selected) abort
-  for item in vaffle#buffer#get_env().items
-    let item.selected = a:selected
+  for item in items
+    call vaffle#set_selected(item, selected)
   endfor
 
   call vaffle#buffer#redraw()
+endfunction
+
+
+function! vaffle#set_selected(item, selected) abort
+  let a:item.selected = a:selected
 endfunction
 
 
