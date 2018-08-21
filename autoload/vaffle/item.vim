@@ -10,8 +10,14 @@ function! vaffle#item#create(path) abort
   let item.path = vaffle#util#normalize_path(a:path)
   let item.is_dir = is_dir
   let item.is_link = (item.path !=# a:path)
-  let item.selected = 0
   let item.basename = vaffle#util#get_last_component(a:path, is_dir)
+
+  let sel = vaffle#get_selection()
+  if sel.dir ==# expand('%:p:h') && has_key(sel.dict, item.basename)
+      let item.selected = 1
+  else
+      let item.selected = 0
+  endif
 
   return item
 endfunction

@@ -131,6 +131,13 @@ function! vaffle#toggle_current(mode) abort
     return
   endif
 
+  let env = vaffle#buffer#get_env()
+  let sel = vaffle#get_selection()
+  if sel.dir !=# env.dir && !empty(sel.dict)
+    echoerr 'some items in other directory selected'
+    return
+  endif
+
   if len(items) == 1
     let item = items[0]
     call vaffle#set_selected(item, !item.selected)
@@ -152,8 +159,16 @@ endfunction
 
 
 function! vaffle#toggle_all() abort
-  let items = vaffle#buffer#get_env().items
+  let env = vaffle#buffer#get_env()
+  let sel = vaffle#get_selection()
+
+  let items = env.items
   if empty(items)
+    return
+  endif
+
+  if sel.dir !=# env.dir && !empty(sel.dict)
+    echoerr 'some items in other directory selected'
     return
   endif
 
@@ -167,8 +182,25 @@ function! vaffle#toggle_all() abort
 endfunction
 
 
+function! vaffle#get_selection() abort
+  return get(g:, 'vaffle_selection', { 'dir': '', 'dict': {} })
+endfunction
+
 function! vaffle#set_selected(item, selected) abort
+  let env = vaffle#buffer#get_env()
+  let sel = vaffle#get_selection()
+  let sel.dir = env.dir
+
+  if a:selected == 0
+    if has_key(sel.dict, a:item.basename)
+      call remove(sel.dict, a:item.basename)
+    endif
+  else
+    let sel.dict[a:item.basename] = 1
+  endif
   let a:item.selected = a:selected
+
+  let g:vaffle_selection = sel
 endfunction
 
 
