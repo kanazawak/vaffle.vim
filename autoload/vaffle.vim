@@ -60,6 +60,10 @@ function! vaffle#refresh() abort
     call vaffle#window#save_cursor(cursor_items[0])
   endif
 
+  if exists('g:vaffle_selection')
+    unlet g:vaffle_selection
+  endif
+
   let env = vaffle#buffer#get_env()
   let env.items = vaffle#env#create_items(env)
 

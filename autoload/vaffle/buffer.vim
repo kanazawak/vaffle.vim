@@ -81,7 +81,15 @@ function! vaffle#buffer#init() abort
   setlocal nobuflisted
 
   if search('.', 'n') > 0
-    call vaffle#refresh()
+    let cursor_items = vaffle#get_cursor_items('n')
+    if !empty(cursor_items)
+      call vaffle#window#save_cursor(cursor_items[0])
+    endif
+
+    let env = vaffle#buffer#get_env()
+    let env.items = vaffle#env#create_items(env)
+
+    call vaffle#buffer#redraw()
     return
   endif
 
