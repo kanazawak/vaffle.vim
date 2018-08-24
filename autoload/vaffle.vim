@@ -129,16 +129,24 @@ function! vaffle#open_parent() abort
 endfunction
 
 
+function! vaffle#check_selection()
+  let env = vaffle#buffer#get_env()
+  let sel = vaffle#get_selection()
+  if sel.dir !=# env.dir && !empty(sel.dict)
+    echoerr 'Some items in other directory selected.'
+    return 0
+  endif
+  return 1
+endfunction
+
+
 function! vaffle#toggle_current(mode) abort
   let items = vaffle#get_cursor_items(a:mode)
   if empty(items)
     return
   endif
 
-  let env = vaffle#buffer#get_env()
-  let sel = vaffle#get_selection()
-  if sel.dir !=# env.dir && !empty(sel.dict)
-    echoerr 'some items in other directory selected'
+  if !vaffle#check_selection()
     return
   endif
 
@@ -163,16 +171,12 @@ endfunction
 
 
 function! vaffle#toggle_all() abort
-  let env = vaffle#buffer#get_env()
-  let sel = vaffle#get_selection()
-
-  let items = env.items
+  let items = vaffle#buffer#get_env().items
   if empty(items)
     return
   endif
 
-  if sel.dir !=# env.dir && !empty(sel.dict)
-    echoerr 'some items in other directory selected'
+  if !vaffle#check_selection()
     return
   endif
 
@@ -189,6 +193,7 @@ endfunction
 function! vaffle#get_selection() abort
   return get(g:, 'vaffle_selection', { 'dir': '', 'dict': {} })
 endfunction
+
 
 function! vaffle#set_selected(item, selected) abort
   let env = vaffle#buffer#get_env()
