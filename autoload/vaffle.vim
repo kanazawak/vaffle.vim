@@ -38,7 +38,19 @@ function! vaffle#start(...) abort
     let path = getcwd()
   endif
 
-  execute printf('edit %s', fnameescape(path))
+  if isdirectory(path)
+    execute printf('edit %s', fnameescape(path))
+  else
+    let dir = fnamemodify(path, ':p:h')
+    execute printf('edit %s', fnameescape(dir))
+    if path =~# '^\.' && !b:vaffle.shows_hidden_files
+      b:vaffle.shows_hidden_files = 1
+      call vaffle#refresh()
+    endif
+    let item = vaffle#item#create(path)
+    call vaffle#window#save_cursor(item)
+    call vaffle#window#restore_cursor()
+  endif
 endfunction
 
 
