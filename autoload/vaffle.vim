@@ -43,8 +43,8 @@ function! vaffle#start(...) abort
   else
     let dir = fnamemodify(path, ':p:h')
     execute printf('edit %s', fnameescape(dir))
-    if path =~# '^\.' && !b:vaffle.shows_hidden_files
-      b:vaffle.shows_hidden_files = 1
+    if fnamemodify(path, ':t') =~# '^\.' && !b:vaffle.shows_hidden_files
+      let b:vaffle.shows_hidden_files = 1
       call vaffle#refresh()
     endif
     let item = vaffle#item#create(path)
