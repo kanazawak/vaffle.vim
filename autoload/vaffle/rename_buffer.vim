@@ -39,18 +39,18 @@ endfunction
 
 
 function! s:redraw_parent_buffer() abort
-  let win_ids = vaffle#compat#win_findbuf(b:vaffle.parent_bufnr)
+  let win_ids = vaffle#win_findbuf(b:vaffle.parent_bufnr)
   if empty(win_ids)
     return
   endif
 
-  let win_id = vaffle#compat#win_getid()
+  let win_id = vaffle#win_getid()
   " Redraw parent buffer if found
-  if vaffle#compat#win_gotoid(win_ids[0])
+  if vaffle#win_gotoid(win_ids[0])
     call vaffle#refresh()
 
     " ...and back to original window
-    call vaffle#compat#win_gotoid(win_id)
+    call vaffle#win_gotoid(win_id)
   endif
 endfunction
 

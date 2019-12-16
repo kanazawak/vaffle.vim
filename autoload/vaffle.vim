@@ -370,4 +370,24 @@ function! vaffle#fill_cmdline() abort
 endfunction
 
 
+function! vaffle#glob_list(expr) abort
+  return glob(a:expr, 1, 1)
+endfunction
+
+
+function! vaffle#win_findbuf(bufnr) abort
+  return win_findbuf(a:bufnr)
+endfunction
+
+
+function! vaffle#win_getid() abort
+  return win_getid()
+endfunction
+
+
+function! vaffle#win_gotoid(expr) abort
+  return win_gotoid(a:expr)
+endfunction
+
+
 let &cpoptions = s:save_cpo
