@@ -72,8 +72,11 @@ function! vaffle#refresh() abort
     call vaffle#window#save_cursor(cursor_items[0])
   endif
 
-  if exists('g:vaffle_selection')
-    unlet g:vaffle_selection
+  if exists('g:vaffle_selection_bufnr')
+      unlet g:vaffle_selection_bufnr
+  endif
+  if exists('g:vaffle_operation')
+      unlet g:vaffle_operation
   endif
 
   let env = vaffle#buffer#get_env()
@@ -144,7 +147,7 @@ endfunction
 function! vaffle#check_selection()
   let env = vaffle#buffer#get_env()
   let sel = vaffle#get_selection()
-  if sel.dir !=# env.dir && !empty(sel.dict)
+  if sel.dir !=# env.dir && !empty(sel.basenames)
     echoerr 'Some items in other directory selected.'
     return 0
   endif
@@ -152,7 +155,7 @@ function! vaffle#check_selection()
 endfunction
 
 
-function! vaffle#toggle_current(mode) abort
+function! vaffle#cut(mode) abort
   let items = vaffle#get_cursor_items(a:mode)
   if empty(items)
     return
@@ -164,26 +167,26 @@ function! vaffle#toggle_current(mode) abort
 
   if len(items) == 1
     let item = items[0]
-    call vaffle#set_selected(item, !item.selected)
 
-    call vaffle#buffer#redraw_item(item)
-
-    " Move cursor to next item
-    normal! j0
+    if item.selected
+      call vaffle#delete_selected()
+    else
+      call vaffle#select(item, 'cut')
+      call vaffle#buffer#redraw_item(item)
+    endif
 
     return
   endif
 
-  let selected = items[0].selected ? 0 : 1
   for item in items
-    call vaffle#set_selected(item, selected)
+    call vaffle#select(item, 'cut')
     call vaffle#buffer#redraw_item(item)
   endfor
 endfunction
 
 
-function! vaffle#toggle_all() abort
-  let items = vaffle#buffer#get_env().items
+function! vaffle#copy(mode) abort
+  let items = vaffle#get_cursor_items(a:mode)
   if empty(items)
     return
   endif
@@ -192,48 +195,31 @@ function! vaffle#toggle_all() abort
     return
   endif
 
-  let selected = items[0].selected ? 0 : 1
-
   for item in items
-    call vaffle#set_selected(item, selected)
+    call vaffle#select(item, 'copy')
+    call vaffle#buffer#redraw_item(item)
   endfor
-
-  call vaffle#buffer#redraw()
 endfunction
 
 
 function! vaffle#get_selection() abort
-  return get(g:, 'vaffle_selection', { 'dir': '', 'dict': {} })
+  let bufnr = get(g:, 'vaffle_selection_bufnr', 0)
+  if (bufnr <= 0)
+      return { 'dir': '', 'basenames': [] }
+  endif
+
+  let env = getbufvar(bufnr, 'vaffle', { 'dir': bufname(bufnr), 'items': [] })
+  let items = copy(env.items)
+  call filter(items, "v:val.selected")
+  return { 'dir': env.dir, 'basenames': map(items, "v:val.basename") }
 endfunction
 
 
-function! vaffle#set_selected(item, selected) abort
+function! vaffle#select(item, operation) abort
   let env = vaffle#buffer#get_env()
-  let sel = vaffle#get_selection()
-  let sel.dir = env.dir
-
-  if a:selected == 0
-    if has_key(sel.dict, a:item.basename)
-      call remove(sel.dict, a:item.basename)
-    endif
-  else
-    let sel.dict[a:item.basename] = 1
-  endif
-  let a:item.selected = a:selected
-
-  let g:vaffle_selection = sel
-endfunction
-
-
-function! vaffle#quit() abort
-  " Try restoring previous buffer
-  let bufnr = vaffle#window#get_env().non_vaffle_bufnr
-  if bufexists(bufnr)
-    execute printf('buffer! %d', bufnr)
-    return
-  endif
-
-  enew
+  let g:vaffle_selection_bufnr = bufnr()
+  let g:vaffle_operation = a:operation
+  let a:item.selected = v:true
 endfunction
 
 
@@ -248,7 +234,7 @@ function! vaffle#delete_selected() abort
         \ : printf('Delete %d selected files (y/N)? ', len(items))
   let yn = input(message)
   echo "\n"
-  if empty(yn) || yn ==? 'n'
+  if empty(yn) || yn !=? 'y'
     echo 'Cancelled.'
     return
   endif
@@ -367,26 +353,6 @@ function! vaffle#fill_cmdline() abort
         \ ": %s\<Home>",
         \ join(paths, ' '))
   call feedkeys(cmdline)
-endfunction
-
-
-function! vaffle#glob_list(expr) abort
-  return glob(a:expr, 1, 1)
-endfunction
-
-
-function! vaffle#win_findbuf(bufnr) abort
-  return win_findbuf(a:bufnr)
-endfunction
-
-
-function! vaffle#win_getid() abort
-  return win_getid()
-endfunction
-
-
-function! vaffle#win_gotoid(expr) abort
-  return win_gotoid(a:expr)
 endfunction
 
 

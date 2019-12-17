@@ -18,7 +18,7 @@ function! vaffle#item#create(path) abort
         \ : getfsize(item.path)
 
   let sel = vaffle#get_selection()
-  if sel.dir ==# expand('%:p:h') && has_key(sel.dict, item.basename)
+  if sel.dir ==# expand('%:p:h') && match(sel.basenames, item.basename) >= 0
       let item.selected = 1
   else
       let item.selected = 0

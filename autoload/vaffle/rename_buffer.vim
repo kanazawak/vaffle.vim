@@ -44,13 +44,13 @@ function! s:redraw_parent_buffer() abort
     return
   endif
 
-  let win_id = vaffle#win_getid()
+  let win_id = win_getid()
   " Redraw parent buffer if found
-  if vaffle#win_gotoid(win_ids[0])
+  if win_gotoid(win_ids[0])
     call vaffle#refresh()
 
     " ...and back to original window
-    call vaffle#win_gotoid(win_id)
+    call win_gotoid(win_id)
   endif
 endfunction
 
