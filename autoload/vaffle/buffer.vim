@@ -15,16 +15,9 @@ function! s:map_default(mode, lhs, vaffle_command, sp_args) abort
 endfunction
 
 function! s:set_up_default_mappings() abort
-  " Toggle
-  call s:map_default('n', '<Space>', 'toggle-current',   '<buffer> <silent>')
   call s:map_default('n', '.',       'toggle-hidden',    '<buffer> <silent>')
-  call s:map_default('n', '*',       'toggle-all',       '<buffer> <silent>')
-  call s:map_default('v', '<Space>', 'toggle-current',   '<buffer> <silent>')
   " Operations for selected items
-  call s:map_default('n', 'd',       'delete-selected',  '<buffer> <nowait> <silent>')
   call s:map_default('n', 'x',       'fill-cmdline',     '<buffer> <silent>')
-  call s:map_default('n', 'm',       'move-selected',    '<buffer> <silent>')
-  call s:map_default('n', '<CR>',    'open-selected',    '<buffer> <silent>')
   call s:map_default('n', 'r',       'rename-selected',  '<buffer> <silent>')
   " Operations for a item on cursor
   call s:map_default('n', 'l',       'open-current',     '<buffer> <silent>')
@@ -34,7 +27,6 @@ function! s:set_up_default_mappings() abort
   call s:map_default('n', 'i',       'new-file',         '<buffer> <silent>')
   call s:map_default('n', '~',       'open-home',        '<buffer> <silent>')
   call s:map_default('n', 'h',       'open-parent',      '<buffer> <silent>')
-  call s:map_default('n', 'q',       'quit',             '<buffer> <silent>')
   call s:map_default('n', 'R',       'refresh',          '<buffer> <silent>')
 
   " Removed <Esc> mappings because they cause a conflict with arrow keys in terminal...
@@ -55,25 +47,6 @@ function! s:create_line_from_item(item) abort
   return printf('%s %s',
         \ a:item.selected ? '*' : ' ',
         \ a:item.basename . (a:item.is_dir ? '/' : ''))
-endfunction
-
-
-function! s:perform_auto_cd_if_needed() abort
-  let path = expand('%')
-
-  if !g:vaffle_auto_cd
-    return
-  endif
-
-  try
-    execute printf('lcd %s', fnameescape(path))
-  catch /:E472:/
-    " E472: Command failed
-    " Permission denied, etc.
-    call vaffle#util#echo_error(
-          \ printf('Changing directory failed: ''%s''', path))
-    return
-  endtry
 endfunction
 
 
@@ -108,8 +81,6 @@ function! vaffle#buffer#init() abort
   let env.items = vaffle#env#create_items(env)
 
   call vaffle#buffer#redraw()
-
-  call s:perform_auto_cd_if_needed()
 endfunction
 
 

@@ -244,29 +244,6 @@ function! vaffle#delete_selected() abort
 endfunction
 
 
-function! vaffle#move_selected() abort
-  let items = vaffle#get_selected_items()
-  if empty(items)
-    return
-  endif
-
-  let message = (len(items) == 1)
-        \ ? printf('Move ''%s'' to: ', items[0].basename)
-        \ : printf('Move %d selected files to: ', len(items))
-  let dst_name = input(message, '', 'dir')
-  echo "\n"
-  if empty(dst_name)
-    echo 'Cancelled.'
-    return
-  endif
-
-  call vaffle#file#move(
-        \ vaffle#buffer#get_env(),
-        \ items, dst_name)
-  call vaffle#refresh()
-endfunction
-
-
 function! vaffle#mkdir() abort
   let name = input('New directory name: ')
   echo "\n"
