@@ -267,9 +267,16 @@ function! vaffle#new_file() abort
     return
   endif
 
-  call vaffle#file#edit(
-        \ vaffle#buffer#get_env(),
-        \ name)
+  let path = vaffle#util#normalize_path(printf('%s/%s',
+        \ vaffle#buffer#get_env().dir,
+        \ name))
+
+  if filereadable(path)
+    echo 'Already exists.'
+    return
+  endif
+
+  execute printf('edit %s', fnameescape(path))
 endfunction
 
 
@@ -280,8 +287,7 @@ function! vaffle#rename_selected() abort
   endif
 
   if len(items) == 1
-    let def_name = vaffle#util#get_last_component(
-          \ items[0].path, items[0].is_dir)
+    let def_name = items[0].basename
     let new_basename = input('New file name: ', def_name)
     echo "\n"
     if empty(new_basename)

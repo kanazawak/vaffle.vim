@@ -16,13 +16,6 @@ function! vaffle#util#normalize_path(path) abort
 endfunction
 
 
-function! vaffle#util#get_last_component(path, is_dir) abort
-  return a:is_dir
-        \ ? fnamemodify(a:path, ':t')
-        \ : fnamemodify(a:path, ':p:t')
-endfunction
-
-
 function! vaffle#util#echo_error(message) abort
   echohl Error
   echomsg a:message

@@ -89,48 +89,6 @@ function! vaffle#file#mkdir(env, name) abort
 endfunction
 
 
-function! vaffle#file#edit(env, name) abort
-  let path = vaffle#util#normalize_path(printf('%s/%s',
-        \ a:env.dir,
-        \ a:name))
-  execute printf('edit %s', fnameescape(path))
-endfunction
-
-
-function! vaffle#file#move(env, items, dst_name) abort
-  let dst_dir = vaffle#util#normalize_path(printf('%s/%s',
-        \ a:env.dir,
-        \ a:dst_name))
-
-  if !isdirectory(dst_dir)
-    call vaffle#util#echo_error(
-          \ printf('Destination is not a directory: ''%s''', dst_dir))
-    return
-  endif
-
-  for item in a:items
-    let basename = vaffle#util#get_last_component(
-          \ item.path,
-          \ item.is_dir)
-    let dst_path = vaffle#util#normalize_path(printf('%s/%s',
-          \ dst_dir,
-          \ basename))
-
-    if filereadable(dst_path) || isdirectory(dst_path)
-      call vaffle#util#echo_error(
-            \ printf('File already exists. Skipped: ''%s''', dst_path))
-      continue
-    endif
-
-    call rename(item.path, dst_path)
-
-    echo printf('Moved file: ''%s'' -> ''%s''',
-          \ item.basename,
-          \ dst_path)
-  endfor
-endfunction
-
-
 function! vaffle#file#rename(env, items, new_basenames) abort
   let cwd = a:env.dir
   let index = 0

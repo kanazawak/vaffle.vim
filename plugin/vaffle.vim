@@ -10,8 +10,19 @@ let g:loaded_vaffle = 1
 
 augroup vaffle_vim
   autocmd!
-  autocmd BufEnter * call vaffle#event#on_bufenter()
+  autocmd BufEnter * call s:on_bufenter()
 augroup END
+
+
+function! s:on_bufenter() abort
+  " Remove netrw handlers.
+  autocmd! FileExplorer *
+
+  let should_init = isdirectory(expand('%'))
+  if should_init
+    call vaffle#init()
+  endif
+endfunction
 
 
 function! s:set_up_default_config()

@@ -3,14 +3,14 @@ set cpoptions&vim
 
 
 function! vaffle#item#create(path) abort
-  let is_dir = isdirectory(a:path)
-
   let item = {}
   let item.index = -1
   let item.path = vaffle#util#normalize_path(a:path)
-  let item.is_dir = is_dir
+  let item.is_dir = isdirectory(a:path)
   let item.is_link = (item.path !=# a:path)
-  let item.basename = vaffle#util#get_last_component(a:path, is_dir)
+  let item.basename = item.is_dir
+        \ ? fnamemodify(a:path, ':t')
+        \ : fnamemodify(a:path, ':p:t')
   let item.ftime = getftime(item.path)
   let item.size = item.is_dir
         \ ? len(glob(item.path . '/*', 0, 1, 1))
