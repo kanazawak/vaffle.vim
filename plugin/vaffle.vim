@@ -48,11 +48,9 @@ command! -bar -nargs=? -complete=dir Vaffle call vaffle#start(<f-args>)
 nnoremap <silent> <Plug>(vaffle-toggle-hidden)    :<C-u>call vaffle#toggle_hidden()<CR>
 " Operations for selected items
 nnoremap <silent> <Plug>(vaffle-fill-cmdline)     :<C-u>call vaffle#fill_cmdline()<CR>
-nnoremap <silent> <Plug>(vaffle-open-selected)    :<C-u>call vaffle#open_selected()<CR>
 nnoremap <silent> <Plug>(vaffle-rename-selected)  :<C-u>call vaffle#rename_selected()<CR>
 " Operations for a item on cursor
-nnoremap <silent> <Plug>(vaffle-open-current)     :<C-u>call vaffle#open_current('')<CR>
-nnoremap <silent> <Plug>(vaffle-open-current-tab) :<C-u>call vaffle#open_current('tab')<CR>
+nnoremap <silent> <Plug>(vaffle-open-current)     :<C-u>call vaffle#open_current()<CR>
 " Misc
 nnoremap <silent> <Plug>(vaffle-mkdir)            :<C-u>call vaffle#mkdir()<CR>
 nnoremap <silent> <Plug>(vaffle-new-file)         :<C-u>call vaffle#new_file()<CR>

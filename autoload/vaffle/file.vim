@@ -2,59 +2,6 @@ let s:save_cpo = &cpoptions
 set cpoptions&vim
 
 
-let s:open_mode_to_cmd_single_map = {
-      \   '':    'edit',
-      \   'tab': 'tabedit',
-      \ }
-let s:open_mode_to_cmd_multiple_map = {
-      \   '':    'split',
-      \   'tab': 'tabedit',
-      \ }
-
-
-function! s:open_single(item, open_mode) abort
-  let path = a:item.path
-
-  if isdirectory(path)
-    if a:open_mode ==# 'tab'
-      tabnew
-    endif
-
-    execute 'edit' a:item.path
-    return
-  endif
-
-  let open_cmd = get(s:open_mode_to_cmd_single_map,
-        \ a:open_mode,
-        \ 'edit')
-  execute printf('%s %s',
-        \ open_cmd,
-        \ fnameescape(a:item.path))
-endfunction
-
-
-function! s:open_multiple(items, open_mode) abort
-  let open_cmd = get(s:open_mode_to_cmd_multiple_map,
-        \ a:open_mode,
-        \ 'split')
-
-  for item in a:items
-    execute printf('%s %s',
-          \ open_cmd,
-          \ fnameescape(item.path))
-  endfor
-endfunction
-
-
-function! vaffle#file#open(items, open_mode) abort
-  if len(a:items) == 1
-    call s:open_single(a:items[0], a:open_mode)
-  else
-    call s:open_multiple(a:items, a:open_mode)
-  endif
-endfunction
-
-
 function! vaffle#file#delete(items) abort
   for item in a:items
     let flag = g:vaffle_force_delete

@@ -86,7 +86,7 @@ function! vaffle#refresh() abort
 endfunction
 
 
-function! vaffle#open_current(open_mode) abort
+function! vaffle#open_current() abort
   let item = get(
         \ vaffle#get_cursor_items('n'),
         \ 0,
@@ -97,19 +97,7 @@ function! vaffle#open_current(open_mode) abort
 
   call vaffle#window#save_cursor(item)
 
-  call vaffle#file#open([item], a:open_mode)
-endfunction
-
-
-function! vaffle#open_selected() abort
-  let items = vaffle#get_selected_items()
-  if empty(items)
-    return
-  endif
-
-  call vaffle#window#save_cursor(items[0])
-
-  call vaffle#file#open(items, '')
+  execute 'edit' fnameescape(item.path)
 endfunction
 
 
@@ -126,7 +114,7 @@ function! vaffle#open(path) abort
         \ expand(a:path) :
         \ fnamemodify(expand(a:path), ':h')
   let new_item = vaffle#item#create(new_dir)
-  call vaffle#file#open([new_item], '')
+  execute 'edit' fnameescape(new_item.path)
 
   " Move cursor to previous current directory
   let prev_dir_item =vaffle#item#create(env_dir)
