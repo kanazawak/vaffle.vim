@@ -61,6 +61,12 @@ function! vaffle#buffer#init() abort
 
     let env = vaffle#buffer#get_env()
     let env.items = vaffle#env#create_items(env)
+    let env.max_labeldispwidth = 0
+    for item in env.items
+      let env.max_labeldispwidth = max([
+                  \ env.max_labeldispwidth,
+                  \ strdisplaywidth(item.label)])
+    endfor
 
     call vaffle#buffer#redraw()
     return
@@ -79,6 +85,12 @@ function! vaffle#buffer#init() abort
 
   let env = vaffle#buffer#get_env()
   let env.items = vaffle#env#create_items(env)
+  let env.max_labeldispwidth = 0
+  for item in env.items
+    let env.max_labeldispwidth = max([
+                \ env.max_labeldispwidth,
+                \ strdisplaywidth(item.label)])
+  endfor
 
   call vaffle#buffer#redraw()
 endfunction

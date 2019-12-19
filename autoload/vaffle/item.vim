@@ -16,6 +16,10 @@ function! vaffle#item#create(path) abort
         \ ? len(glob(item.path . '/*', 0, 1, 1))
         \   + len(glob(item.path . '/.*', 0, 1, 1)) - 2
         \ : getfsize(item.path)
+  let item.label = item.basename
+  if item.is_link
+      let item.label = item.label . ' -> ' . item.path
+  endif
 
   let sel = vaffle#get_selection()
   if sel.dir ==# expand('%:p:h') && match(sel.basenames, item.basename) >= 0
@@ -26,6 +30,5 @@ function! vaffle#item#create(path) abort
 
   return item
 endfunction
-
 
 let &cpoptions = s:save_cpo
