@@ -32,40 +32,6 @@ function! vaffle#get_selected_items() abort
 endfunction
 
 
-function! vaffle#start(...) abort
-  let path = get(a:000, 0, '')
-  if empty(path)
-    let path = getcwd()
-  endif
-
-  if isdirectory(path)
-    execute printf('edit %s', fnameescape(path))
-  else
-    let dir = fnamemodify(path, ':p:h')
-    execute printf('edit %s', fnameescape(dir))
-    if fnamemodify(path, ':t') =~# '^\.' && !b:vaffle.shows_hidden_files
-      let b:vaffle.shows_hidden_files = 1
-      call vaffle#refresh()
-    endif
-    let item = vaffle#item#create(path)
-    call vaffle#window#save_cursor(item)
-    call vaffle#window#restore_cursor()
-  endif
-endfunction
-
-
-function! vaffle#init() abort
-  try
-    call vaffle#buffer#init()
-    call vaffle#window#init()
-  catch /:E37:/
-    call vaffle#util#echo_error(
-          \ 'E37: No write since last change')
-    return
-  endtry
-endfunction
-
-
 function! vaffle#refresh() abort
   let cursor_items = vaffle#get_cursor_items('n')
   if !empty(cursor_items)
@@ -97,7 +63,7 @@ function! vaffle#open_current() abort
 
   call vaffle#window#save_cursor(item)
 
-  execute 'edit' fnameescape(item.path)
+  call vaffle#open(item.path)
 endfunction
 
 
@@ -110,25 +76,40 @@ function! vaffle#open(path) abort
     call vaffle#window#save_cursor(cursor_items[0])
   endif
 
-  let new_dir = isdirectory(expand(a:path)) ?
-        \ expand(a:path) :
-        \ fnamemodify(expand(a:path), ':h')
-  let new_item = vaffle#item#create(new_dir)
-  execute 'edit' fnameescape(new_item.path)
+  if isdirectory(a:path)
+    let bnr = -1
+    for pat in ['', ':~:.', ':~']
+      let bnr = bufnr('^'.fnamemodify(a:path, pat).'$')
+      if -1 != bnr
+        break
+      endif
+    endfor
 
-  " Move cursor to previous current directory
-  let prev_dir_item =vaffle#item#create(env_dir)
-  call vaffle#window#save_cursor(prev_dir_item)
-  call vaffle#window#restore_cursor()
+    if bnr > 0
+      execute 'buffer' bnr
+      call vaffle#window#restore_cursor()
+    else
+      execute 'edit' fnameescape(a:path)
+    endif
+  else
+    execute 'edit' fnameescape(a:path)
+  endif
 endfunction
 
 
 function! vaffle#open_parent() abort
   let env = vaffle#buffer#get_env()
   let parent_dir = fnameescape(fnamemodify(env.dir, ':h'))
-  if parent_dir !=# env.dir
-    call vaffle#open(parent_dir)
+  if parent_dir ==# env.dir
+    return
   endif
+
+  call vaffle#open(parent_dir)
+
+  " Move cursor to previous current directory
+  let prev_dir_item = vaffle#item#create(env.dir)
+  call vaffle#window#save_cursor(prev_dir_item)
+  call vaffle#window#restore_cursor()
 endfunction
 
 

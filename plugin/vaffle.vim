@@ -18,9 +18,10 @@ function! s:on_bufenter() abort
   " Remove netrw handlers.
   autocmd! FileExplorer *
 
-  let should_init = isdirectory(expand('%'))
+  let should_init = isdirectory(expand('%')) && search('.', 'n') == 0
   if should_init
-    call vaffle#init()
+    call vaffle#buffer#init()
+    call vaffle#window#init()
   endif
 endfunction
 
@@ -42,7 +43,7 @@ endfunction
 
 call s:set_up_default_config()
 
-command! -bar -nargs=? -complete=dir Vaffle call vaffle#start(<f-args>)
+command! -bar -nargs=? -complete=dir Vaffle call vaffle#open(fnamemodify(<f-args>, ':p'))
 
 
 nnoremap <silent> <Plug>(vaffle-toggle-hidden)    :<C-u>call vaffle#toggle_hidden()<CR>
@@ -54,7 +55,7 @@ nnoremap <silent> <Plug>(vaffle-open-current)     :<C-u>call vaffle#open_current
 " Misc
 nnoremap <silent> <Plug>(vaffle-mkdir)            :<C-u>call vaffle#mkdir()<CR>
 nnoremap <silent> <Plug>(vaffle-new-file)         :<C-u>call vaffle#new_file()<CR>
-nnoremap <silent> <Plug>(vaffle-open-home)        :<C-u>call vaffle#open('~')<CR>
+nnoremap <silent> <Plug>(vaffle-open-home)        :<C-u>call vaffle#open(expand("~"))<CR>
 nnoremap <silent> <Plug>(vaffle-open-parent)      :<C-u>call vaffle#open_parent()<CR>
 nnoremap <silent> <Plug>(vaffle-refresh)          :<C-u>call vaffle#refresh()<CR>
 

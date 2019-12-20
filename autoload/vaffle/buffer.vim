@@ -51,37 +51,17 @@ endfunction
 
 
 function! vaffle#buffer#init() abort
-  setlocal nobuflisted
-
-  if search('.', 'n') > 0
-    let cursor_items = vaffle#get_cursor_items('n')
-    if !empty(cursor_items)
-      call vaffle#window#save_cursor(cursor_items[0])
-    endif
-
-    let env = vaffle#buffer#get_env()
-    let env.items = vaffle#env#create_items(env)
-    let env.max_labeldispwidth = 0
-    for item in env.items
-      let env.max_labeldispwidth = max([
-                  \ env.max_labeldispwidth,
-                  \ strdisplaywidth(item.label)])
-    endfor
-
-    call vaffle#buffer#redraw()
-    return
-  endif
-
   if g:vaffle_use_default_mappings
     call s:set_up_default_mappings()
   endif
 
+  setlocal nobuflisted
   setlocal bufhidden=hide
   setlocal buftype=nowrite
-  setlocal filetype=vaffle
   setlocal matchpairs=
   setlocal noswapfile
   setlocal nowrap
+  setlocal filetype=vaffle
 
   let env = vaffle#buffer#get_env()
   let env.items = vaffle#env#create_items(env)
