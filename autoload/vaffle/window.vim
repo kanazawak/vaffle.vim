@@ -2,23 +2,9 @@ let s:save_cpo = &cpoptions
 set cpoptions&vim
 
 
-function! vaffle#window#init() abort
-  let win_env = extend(
-        \ vaffle#win_env#create(),
-        \ get(w:, 'vaffle', {}))
-
-  call vaffle#window#set_env(win_env)
-endfunction
-
-
 function! vaffle#window#get_env() abort
-  let w:vaffle = get(w:, 'vaffle', vaffle#win_env#create())
+  let w:vaffle = get(w:, 'vaffle', { 'cursor_items': {} })
   return w:vaffle
-endfunction
-
-
-function! vaffle#window#set_env(win_env) abort
-  let w:vaffle = a:win_env
 endfunction
 
 
@@ -26,7 +12,6 @@ function! vaffle#window#save_cursor(item) abort
   let env = vaffle#buffer#get_env()
   let win_env = vaffle#window#get_env()
   let win_env.cursor_items[env.dir] = a:item
-  call vaffle#window#set_env(win_env)
 endfunction
 
 

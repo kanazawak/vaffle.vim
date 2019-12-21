@@ -21,7 +21,6 @@ function! s:on_bufenter() abort
   let should_init = isdirectory(expand('%')) && search('.', 'n') == 0
   if should_init
     call vaffle#buffer#init()
-    call vaffle#window#init()
   endif
 endfunction
 

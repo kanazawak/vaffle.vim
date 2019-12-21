@@ -14,14 +14,6 @@ function! vaffle#env#create(path) abort
 endfunction
 
 
-function! vaffle#env#inherit(env, old_env) abort
-  let a:env.shows_hidden_files = get(
-        \ a:old_env,
-        \ 'shows_hidden_files',
-        \ a:env.shows_hidden_files)
-endfunction
-
-
 function! vaffle#env#create_items(env) abort
   let env_dir = fnameescape(fnamemodify(a:env.dir, ':p'))
   let paths = glob(env_dir . '*', 1, 1)
